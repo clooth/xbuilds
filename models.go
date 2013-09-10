@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// START OMIT
 type (
 	Builds []Build
 	Build  struct {
@@ -14,3 +15,4 @@ type (
 		Updated time.Time     `json:"u,omitempty" bson:"u,omitempty"`
 	}
 )
+// END OMIT

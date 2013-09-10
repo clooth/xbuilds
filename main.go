@@ -10,15 +10,14 @@ import (
 
 const MongoConnectionHost  = "127.0.0.1"
 const MongoConnectionPort  = 27017
-
 const MongoConnectionDb    = "ggbuilds"
-const BuildsCollectionName = "builds"
 
+const BuildsCollectionName = "builds"
 
 var (
 	mongoSession  *mgo.Session
 	mongoDatabase *mgo.Database
-	repo           buildsRepo
+	repo           buildRepo
 
 	router = mux.NewRouter()
 )
@@ -39,9 +38,15 @@ func main() {
 	repo.Collection = mongoDatabase.C(BuildsCollectionName)
 
 	// Set up web server handlers
+	// START OMIT
 	route("/builds", handleBuilds).Methods("GET")
+	route("/", func(rw http.ResponseWriter, r *http.Request) {
+		http.ServeFile(rw, r, "./index.html")	
+	})
+	// END OMIT
 
 	http.Handle("/", router)
+
 	log.Printf("Starting GGBuilds API Server")
 	panic(http.ListenAndServe(":8080", nil))
 }

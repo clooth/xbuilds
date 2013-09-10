@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func writeJson(rw http.ResponseWriter, v interface{}) {
+func writeJson(rw http.ResponseWriter, v interface{}) bool {
 	// avoid json vulnerabilities, always wrap v in an object literal
 	doc := map[string]interface{}{"d": v}
 
@@ -18,4 +18,6 @@ func writeJson(rw http.ResponseWriter, v interface{}) {
 		rw.Header().Set("Content-Type", "application/json")
 		rw.Write(data)
 	}
+
+	return true
 }

@@ -7,12 +7,12 @@ import (
 )
 
 type (
-	buildsRepo struct {
+	buildRepo struct {
 		Collection *mgo.Collection
 	}
 )
 
-func (r buildsRepo) All() (builds Builds, err error) {
+func (r buildRepo) All() (builds Builds, err error) {
 	err = r.Collection.Find(bson.M{}).All(&builds)
 	
 	if err != nil {
@@ -22,7 +22,7 @@ func (r buildsRepo) All() (builds Builds, err error) {
 	return builds, nil
 }
 
-func (r buildsRepo) Create(build *Build) (err error) {
+func (r buildRepo) Create(build *Build) (err error) {
 	if build.Id.Hex() == "" {
 		build.Id = bson.NewObjectId()
 	}
@@ -37,7 +37,7 @@ func (r buildsRepo) Create(build *Build) (err error) {
 	return
 }
 
-func (r buildsRepo) Update(build *Build) (err error) {
+func (r buildRepo) Update(build *Build) (err error) {
 	var change = mgo.Change{
 		ReturnNew: true,
 		Update: bson.M{
@@ -47,4 +47,6 @@ func (r buildsRepo) Update(build *Build) (err error) {
 			}}}
 
 	_, err = r.Collection.FindId(build.Id).Apply(change, build)
+
+	// Missing return here
 }
