@@ -1,1 +1,1 @@
-web: ./server/server -p=$PORT
+web: sh ./server/boot.sh

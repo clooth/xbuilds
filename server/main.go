@@ -207,7 +207,7 @@ func main() {
 
 	// Parse command line
 	var port string
-	flag.StringVar(&port, "p", "1337", "Port to run the server on")
+	flag.StringVar(&port, "port", "1337", "Port to run the server on")
 	flag.Parse()
 
 	// Set up mongo database
@@ -236,7 +236,7 @@ func main() {
 
 	color.Println("@g- Server Online and Listening")
 	color.Println("")
-	panic(http.ListenAndServe(":"+port, nil))
+	panic(http.ListenAndServe(":" + port, nil))
 }
 
 func introMessage() {
