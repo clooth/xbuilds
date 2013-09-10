@@ -85,6 +85,15 @@ func route(pattern string, handler func(http.ResponseWriter, *http.Request)) *mu
 func logRequest(handler func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var s = time.Now()
+		
+		w.Header().Set("Access-Control-Allow-Methods", "GET")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Origin")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		if r.Method == "OPTIONS" && len(r.Header["Origin"]) > 0 {
+			return
+		}
+
 		handler(w, r)
 		color.Printf("@c%s %s %s %6.3fms\n", r.Method, r.RequestURI, r.RemoteAddr, (time.Since(s).Seconds()*1000))
 	}
