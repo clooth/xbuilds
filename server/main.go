@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"time"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 //
 
 const MongoConnectionHost      = "mongodb://xbuilds:foobar987@paulo.mongohq.com:10020/app18043605"
-const MongoConnectionDb        = "xbuilds"
+const MongoConnectionDb        = "app18043605"
 const BuildsCollectionName     = "builds"
 const BuildStepsCollectionName = "buildSteps"
 
@@ -204,6 +205,11 @@ func main() {
 
 	introMessage()
 
+	// Parse command line
+	var port string
+	flag.StringVar(&port, "p", "1337", "Port to run the server on")
+	flag.Parse()
+
 	// Set up mongo database
 	if mongoSession, err = mgo.Dial(MongoConnectionHost); err != nil {
 		panic(err)
@@ -230,7 +236,7 @@ func main() {
 
 	color.Println("@g- Server Online and Listening")
 	color.Println("")
-	panic(http.ListenAndServe(":8080", nil))
+	panic(http.ListenAndServe(":"+port, nil))
 }
 
 func introMessage() {
