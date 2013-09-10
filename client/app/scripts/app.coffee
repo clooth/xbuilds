@@ -1,3 +1,4 @@
+# Main Application Bootstrap File
 Client = window.Client = Ember.Application.create()
 
 # Order and include as you please.

@@ -1,0 +1,9 @@
+<h1>Builds</h1>
+
+<ul>
+ {{#each model}}
+ <li>{{#linkTo 'build' this}}{{this.id}}{{/linkTo}}</li>
+  {{/each}}
+</ul>
+
+{{outlet}}
