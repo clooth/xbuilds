@@ -57,16 +57,14 @@ func (r Response) String() (s string) {
 }
 
 // WriteJson will wrap and serialize the given object into a JSON object
-func RespondWithJSON(rw http.ResponseWriter, v interface{}) {
+func RespondWithJSON(rw http.ResponseWriter, v interface{}, rootKey string) {
 	response := Response{}
 
 	if _, err := json.Marshal(v); err != nil {
 		log.Printf("Error when giving JSON response: %v", err)
-		response["success"] = false
-		response["data"] = nil
+		response[rootKey] = nil
 	} else {
-		response["success"] = true
-		response["data"] = v
+		response[rootKey] = v
 	}
 
 	//rw.Header().Set("Content-Length", strconv.Itoa(len(response)))
@@ -90,10 +88,6 @@ func logRequest(handler func(http.ResponseWriter, *http.Request)) func(http.Resp
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Origin")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		if r.Method == "OPTIONS" && len(r.Header["Origin"]) > 0 {
-			return
-		}
-
 		handler(w, r)
 		color.Printf("@c%s %s %s %6.3fms\n", r.Method, r.RequestURI, r.RemoteAddr, (time.Since(s).Seconds()*1000))
 	}
@@ -106,10 +100,10 @@ func logRequest(handler func(http.ResponseWriter, *http.Request)) func(http.Resp
 type (
 	Builds []Build
 	Build  struct {
-		Id      bson.ObjectId `json:"id"          bson:"_id"`
-		Name 	string        `json:"n"           bson:"n"`
-		Created time.Time     `json:"c"           bson:"c"`
-		Updated time.Time     `json:"u,omitempty" bson:"u,omitempty"`
+		Id      bson.ObjectId `json:"id"          		   bson:"_id"`
+		Name 	string        `json:"name"           	   bson:"name"`
+		Created time.Time     `json:"created_at"           bson:"created_at"`
+		Updated time.Time     `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 	}
 )
 
@@ -126,6 +120,8 @@ type (
 
 func (r BuildsRepository) All() (builds Builds, err error) {
 	err = r.Collection.Find(bson.M{}).All(&builds)
+
+	log.Printf("%v", builds)
 	
 	if err != nil {
 		return nil, err
@@ -168,8 +164,8 @@ func (r BuildsRepository) Update(build *Build) (err error) {
 		ReturnNew: true,
 		Update: bson.M{
 			"$set": bson.M{
-				"u": time.Now(),
-				"n": build.Name,
+				"updated_at": time.Now(),
+				"name": build.Name,
 			}}}
 
 	_, err = r.Collection.FindId(build.Id).Apply(change, build)
@@ -193,8 +189,27 @@ func handleBuildsIndex(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	RespondWithJSON(rw, builds)
+	RespondWithJSON(rw, builds, "builds")
 }
+
+func handleBuildById(rw http.ResponseWriter, req *http.Request) {
+	var (
+		build Build
+		err   error
+	)
+
+	vars := mux.Vars(req)
+	id := vars["id"]
+	if build, err = buildsRepo.Get(id); err != nil {
+		color.Println("Error getting build "+ id + ": ")
+		log.Printf("%v", err)
+		http.Error(rw, "500 Internal server error", 500)
+		return
+	}
+
+	RespondWithJSON(rw, build, "build")
+}
+
 
 //
 // Main Application Start Point
@@ -227,6 +242,8 @@ func main() {
 
 	//route("/builds/{id}", handleBuild).Methods("GET")
 	route("/builds", handleBuildsIndex).Methods("GET")
+	//route("/builds", handleBuildsCreate).Methods("POSt")
+	route("/builds/{id}", handleBuildById).Methods("GET")
 	route("/", func(rw http.ResponseWriter, r *http.Request) {
 		http.ServeFile(rw, r, "./index.html")	
 	})

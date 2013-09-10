@@ -1,3 +1,3 @@
 Client.BuildRoute = Ember.Route.extend
-  model: (params) ->
-    @store.find('build', params.build_id)
+  model: (model) ->
+    @store.find('build', model.build_id)

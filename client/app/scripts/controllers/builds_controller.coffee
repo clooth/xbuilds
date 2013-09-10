@@ -1,2 +1,2 @@
-Client.BuildsController = Ember.ObjectController.extend
-  foo: 123
+Client.BuildsController = Ember.ArrayController.extend
+    foo: 123
