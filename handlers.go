@@ -20,5 +20,3 @@ func handleBuilds(writer http.ResponseWriter, r *http.Request) {
 
 	writeJson(writer, builds)
 }
-
-// TODO: Players handlers

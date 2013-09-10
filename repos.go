@@ -34,7 +34,8 @@ func (r buildRepo) Create(build *Build) (err error) {
 	build.Updated = time.Now()
 
 	_, err = r.Collection.UpsertId(build.Id, build)
-	return
+	
+	return err
 }
 
 func (r buildRepo) Update(build *Build) (err error) {
@@ -48,5 +49,5 @@ func (r buildRepo) Update(build *Build) (err error) {
 
 	_, err = r.Collection.FindId(build.Id).Apply(change, build)
 
-	// Missing return here
+	return err
 }
