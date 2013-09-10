@@ -17,7 +17,7 @@ import (
 // Constants
 //
 
-const MongoConnectionHost      = "mongodb://<user>:<password>@paulo.mongohq.com:10020/app18043605"
+const MongoConnectionHost      = "mongodb://xbuilds:foobar987@paulo.mongohq.com:10020/app18043605"
 const MongoConnectionDb        = "xbuilds"
 const BuildsCollectionName     = "builds"
 const BuildStepsCollectionName = "buildSteps"
